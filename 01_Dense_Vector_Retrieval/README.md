@@ -69,6 +69,8 @@ Why is cosine similarity useful for dense vector retrieval?
 
 ##### ✅ Answer:
 
+In embeddings, meaning is encoded in the direction of the vector, not its magnitude. Cosine similarity measures the angle between two vectors, so it captures how aligned their meanings are while ignoring length differences. That gives a stable, bounded score (-1 to 1) that's great for ranking, which is what a vector database does when it searches for the chunks whose "meaning" points closest to the query.
+
 ---
 
 ## 🏗️ Activity #2: Build the Vector RAG Pipeline
@@ -88,17 +90,23 @@ Why is metadata important for a RAG application?
 
 ##### ✅ Answer:
 
+There are many reasons why metadata is important. The key ones include giving the ability to refer to the exact page where the answer came from (citations), and providing more context to help you debug cases where bad retrieval might have happened.
+
 #### ❓Question #3
 
 What tradeoff do we make when choosing chunk size and chunk overlap?
 
 ##### ✅ Answer:
 
+Larger chunks keep more of the context together but at the cost of adding noise and diluting a good match. On the other hand, smaller chunks might be more precise but may lose the surrounding context. Larger overlap means less chance of splitting a concept across multiple chunks, but creates duplicate content.
+
 #### ❓Question #4
 
 What does a similarity score help you understand, and what does it not prove by itself?
 
 ##### ✅ Answer:
+
+The similarity score shows how close a chunk is to the query, and it can be used to rank the results (highest score first). It does not prove that the chunk actually answers the question though, as a chunk can be on-topic and still not contain the specific fact you need.
 
 ---
 
@@ -115,6 +123,8 @@ For the vibe check queries, did the retrieved context seem relevant before gener
 
 ##### ✅ Answer:
 
+Yes, the context retrieved for the first three vibe check questions looked relevant, because the wording of those questions was similar to content in the PDF (preventive care, symptoms, feeding). The last vibe check question (whether a cat can help file taxes) has no relevant information in the document, so the assistant correctly responded that it did not have enough information in the PDF doc to answer.
+
 ---
 
 ## 🏗️ Activity #4: Tune Retrieval
@@ -130,13 +140,19 @@ Document what changed and whether retrieval improved.
 
 ##### Settings Changed:
 
--
+- Reduced `chunk_size` from 1000 to 300
+- Reduced `chunk_overlap` from 200 to 60
+
+##### Settings Unchanged:
+
+- Test question: "How many litter boxes should I have for my cats?"
+- Kept `k = 4` constant
 
 ##### Results:
 
-1.
-2.
-3.
+1. The top-result similarity score rose from **0.601** (baseline) to **0.718** (smaller chunks).
+2. The top chunk became more on-target: the baseline returned generic "General Litter Box Considerations" text, while the smaller-chunk run returned the actual rule of thumb ("one litter box for each cat plus one additional box, or one litter box for each social group plus one additional box, if the number of social groups is known")
+3. The retrieval improved overall. Having smaller chunks reduces the chance of mixing multiple topics into one embedding, so each vector is more likely to represent one specific idea which makes the fact match score higher and rank first.
 
 ---
 
