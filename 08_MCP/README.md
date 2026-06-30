@@ -1,19 +1,17 @@
-<p align="center" draggable="false"><img src="https://github.com/AI-Maker-Space/LLM-Dev-101/assets/37101144/d1343317-fa2f-41e1-8af1-1dbb18399719"
-     width="200px"
-     height="auto"/>
-</p>
-
-<h1 align="center" id="heading">Session 8: Model Context Protocol (MCP)</h1>
+# Session 8: Model Context Protocol (MCP)
 
 ### [Quicklinks]()
 
-| Session Sheet | Recording | Slides | Repo | Homework | Feedback |
-|:--------------|:----------|:-------|:-----|:---------|:---------|
-| [MCP Servers](../00_Docs/Session_Sheets/17_MCP_Servers_and_A2A/README.md) | | | You are here! | | |
+
+| Session Sheet                                                             | Recording | Slides | Repo          | Homework | Feedback |
+| ------------------------------------------------------------------------- | --------- | ------ | ------------- | -------- | -------- |
+| [MCP Servers](../00_Docs/Session_Sheets/17_MCP_Servers_and_A2A/README.md) |           |        | You are here! |          |          |
+
 
 ## Useful Resources
 
 **MCP (Model Context Protocol)**
+
 - [MCP Official Docs](https://modelcontextprotocol.io/) — Spec, tutorials, and guides
 - [MCP-UI](https://mcpui.dev/) — Official standard for interactive UI in MCP
 - [MCP Auth Guide (Auth0)](https://auth0.com/blog/mcp-specs-update-all-about-auth/) — Deep dive into MCP auth spec updates
@@ -137,7 +135,7 @@ Shout out to @AIMakerspace !
 Feel free to reach out if you're curious or would like to collaborate on similar projects! 🤝🔥
 ```
 
-## Submitting Your Homework [OPTIONAL]
+## Submitting Your Homework
 
 Follow these steps to prepare and submit your homework assignment:
 
@@ -155,7 +153,17 @@ Why is OAuth important for MCP servers, and what security considerations should 
 
 #### Answer
 
-_(insert your answer here)_
+Q: Why is OAuth important for MCP servers?
+
+A: OAuth matters because when an MCP server is exposed over the network, it is reachable by anyone who has the URL, so the server needs a way to know who is calling and to keep the data of each user separate.
+
+Q: What security considerations should you keep in mind when exposing tools to AI clients?
+
+A: There are many security considerations when exposing tools to AI clients, including but not lmited to:
+
+- Prompt injection. As our agent reads tool descriptions and tool *outputs* as part of its context, a compromised tool could return text that instruct the agent to do something specific such as calling checkout and auto-buying items the end user might not want. It's critical for the agent to treat output as untrusted data.
+- Credential exposure. It's also critical that a the user credentials (i.e. thebearer token) does not leak where a third party could misuse it to perform nefarious actions.
+- Unverified third-party servers. When one connect their agent to someone else's MCP server, they implictly trust their tools and their descriptions, which can be written in a way to deceive.
 
 ### Question #2
 
@@ -163,11 +171,21 @@ What is Streamable HTTP transport in MCP, and why might you expose a server publ
 
 #### Answer
 
-_(insert your answer here)_
+Q: What is Streamable HTTP transport in MCP?
+
+Streamable HTTP is the MCP transport that runs the server as a real web service at an HTTP endpoint (here `/mcp` )which is reachable by remote clients over the network and is able to stream responses back as they become ready, over a connection that stays open.
+
+Q: Why might you expose a server publicly with OAuth instead of using a local stdio connection?
+
+Stdio only works when the person using the server is also the person running it, on the same machine. When we need to manage and authenticate multiple usrs, we have to use a protocol like OAuth to grant access to tools and services running on the server.
 
 ## Activity 1: Extend the MCP Server
 
 Add at least one new tool to the cat shop MCP server (e.g., `search_products`, `update_cart_quantity`, or `get_order_history`). Ensure the new tool integrates properly with the existing database and OAuth authentication. Demo the new tool through an MCP client and include it in your Loom video.
+
+#### Answer
+
+Added `update_cart_quantity to tools.py`
 
 ## Advanced Activity: Build a Custom MCP Client
 

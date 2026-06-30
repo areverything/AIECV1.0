@@ -1,8 +1,41 @@
+import functools
+import logging
 import secrets
+import sys
 
 from mcp.server.auth.middleware.auth_context import get_access_token
 
 from .server import mcp, oauth_provider
+
+# Dedicated logger so tool-call lines always show in the server terminal,
+# independent of however uvicorn/FastMCP configure the root logger.
+logger = logging.getLogger("catshop.tools")
+if not logger.handlers:
+    _handler = logging.StreamHandler(sys.stderr)
+    _handler.setFormatter(logging.Formatter("%(asctime)s  [tool] %(message)s", "%H:%M:%S"))
+    logger.addHandler(_handler)
+    logger.setLevel(logging.INFO)
+    logger.propagate = False
+
+
+def log_tool(func):
+    """Log every MCP tool invocation: the call with its arguments, then ok/error."""
+    @functools.wraps(func)
+    async def wrapper(*args, **kwargs):
+        call = f"{func.__name__}(" + ", ".join(f"{k}={v!r}" for k, v in kwargs.items()) + ")"
+        logger.info("→ %s", call)
+        try:
+            result = await func(*args, **kwargs)
+        except Exception as exc:
+            logger.info("✗ %s raised %s: %s", func.__name__, type(exc).__name__, exc)
+            raise
+        if isinstance(result, dict) and result.get("error"):
+            logger.info("✗ %s -> %s", func.__name__, result["error"])
+        else:
+            logger.info("✓ %s ok", func.__name__)
+        return result
+
+    return wrapper
 
 
 async def _get_username() -> str:
@@ -16,6 +49,7 @@ async def _get_username() -> str:
 
 
 @mcp.tool()
+@log_tool
 async def list_products(category: str | None = None) -> list[dict]:
     """Browse the cat shop catalog. Optionally filter by category (toys, beds, food, furniture)."""
     db = await oauth_provider._get_db()
@@ -36,6 +70,7 @@ async def list_products(category: str | None = None) -> list[dict]:
 
 
 @mcp.tool()
+@log_tool
 async def get_product(product_id: int) -> dict:
     """Get full details of a single product by its ID."""
     db = await oauth_provider._get_db()
@@ -56,6 +91,7 @@ async def get_product(product_id: int) -> dict:
 
 
 @mcp.tool()
+@log_tool
 async def add_to_cart(product_id: int, quantity: int = 1) -> dict:
     """Add a product to your shopping cart. If already in cart, quantity is increased."""
     username = await _get_username()
@@ -78,6 +114,7 @@ async def add_to_cart(product_id: int, quantity: int = 1) -> dict:
 
 
 @mcp.tool()
+@log_tool
 async def view_cart() -> dict:
     """View everything in your shopping cart with quantities and totals."""
     username = await _get_username()
@@ -102,8 +139,36 @@ async def view_cart() -> dict:
     total = round(sum(i["subtotal"] for i in items), 2)
     return {"items": items, "total": total, "item_count": len(items)}
 
+@mcp.tool()
+@log_tool
+async def update_cart_quantity(product_id: int, quantity: int) -> dict:
+    """Set the quantity of a product already in your cart. Changing the quantity of a product to 0 removes it."""
+    username = await _get_username()
+    db = await oauth_provider._get_db()
+
+    if quantity <= 0:
+        cursor = await db.execute(
+            "DELETE FROM cart_items WHERE username = ? AND product_id = ?",
+            (username, product_id),
+        )
+        await db.commit()
+        if cursor.rowcount == 0:
+            return {"error": "Item not in cart"}
+        return {"success": True, "message": "Item removed from cart"}
+
+    cursor = await db.execute(
+        "UPDATE cart_items SET quantity = ? WHERE username = ? AND product_id = ?",
+        (quantity, username, product_id),
+    )
+
+    await db.commit()
+    if cursor.rowcount == 0:
+        return {"error": "Item not in cart... Add it first with add_to_cart"}
+    return {"success": True, "message": f"Cart updated: quantity set to {quantity}"}
+
 
 @mcp.tool()
+@log_tool
 async def remove_from_cart(product_id: int) -> dict:
     """Remove a product from your shopping cart."""
     username = await _get_username()
@@ -119,6 +184,7 @@ async def remove_from_cart(product_id: int) -> dict:
 
 
 @mcp.tool()
+@log_tool
 async def checkout() -> dict:
     """Complete your purchase. Shows order summary and clears the cart."""
     username = await _get_username()
