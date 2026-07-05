@@ -1,28 +1,31 @@
-<p align="center" draggable="false"><img src="https://github.com/AI-Maker-Space/LLM-Dev-101/assets/37101144/d1343317-fa2f-41e1-8af1-1dbb18399719"
-     width="200px"
-     height="auto"/>
-</p>
-
-<h1 align="center" id="heading">Session 9: Agent Servers</h1>
+# Session 9: Agent Servers
 
 ### [Quicklinks]()
 
-| Session Sheet | Recording | Slides | Repo | Homework | Feedback |
-|:--------------|:----------|:-------|:-----|:---------|:---------|
-| [Session 9: Agent Servers & E2E Agents](https://github.com/AI-Maker-Space/The-AI-Engineering-Certification-v1.0/tree/main/00_Docs/Modules/09_Agent_servers_%26_E2E_Agents) |[Recording!](https://us02web.zoom.us/rec/share/ByhPGNz-CQ4C9k859VnRIoGPfkS4AdBzLPQiCIgEafYiDjYxtNXUjidTI1dM-79R.oCxzwNn0SyVAWj88) <br> passcode: `r14dvS$V`| [Session 9 Slides](https://canva.link/yqymnzjmzhpnyiy) | You are here! | [Session 9 Assignment](https://forms.gle/PMmqBBLZ8d8fGg1L8) | [Feedback 7/1](https://forms.gle/36tnHPpeS562DD3fA) |
+
+| Session Sheet                                                                                                                                                              | Recording                                                                                                                                              | Slides                                                 | Repo          | Homework                                                    | Feedback                                            |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------ | ------------- | ----------------------------------------------------------- | --------------------------------------------------- |
+| [Session 9: Agent Servers & E2E Agents](https://github.com/AI-Maker-Space/The-AI-Engineering-Certification-v1.0/tree/main/00_Docs/Modules/09_Agent_servers_%26_E2E_Agents) | [Recording!](https://us02web.zoom.us/rec/share/ByhPGNz-CQ4C9k859VnRIoGPfkS4AdBzLPQiCIgEafYiDjYxtNXUjidTI1dM-79R.oCxzwNn0SyVAWj88) passcode: `r14dvS$V` | [Session 9 Slides](https://canva.link/yqymnzjmzhpnyiy) | You are here! | [Session 9 Assignment](https://forms.gle/PMmqBBLZ8d8fGg1L8) | [Feedback 7/1](https://forms.gle/36tnHPpeS562DD3fA) |
+
+
+
 
 ## Useful Resources
 
 **LangSmith Deployment & Studio**
+
 - [LangSmith Deployment docs](https://docs.langchain.com/langsmith/deployments) — Deploy, manage, and monitor agent APIs
 - [LangGraph Studio](https://docs.langchain.com/langgraph-platform/langgraph-studio) — Visualize, debug, and test agents locally and in production
 - [Agent Server API](https://docs.langchain.com/langsmith/agent-server) — Threads, runs, assistants, and streaming
 - [You don't know what your agent will do until it's in production](https://blog.langchain.com/you-dont-know-what-your-agent-will-do-until-its-in-production/)
 
 **Frontend Integration**
-- [`@langchain/react` — `useStream` hook](https://www.npmjs.com/package/@langchain/react) — Stream agent responses in React/Next.js
-- [`langgraph-nextjs-api-passthrough`](https://www.npmjs.com/package/langgraph-nextjs-api-passthrough) — Secure Next.js API routes that proxy to your deployed agent without exposing keys in the browser
+
+- `@langchain/react` [—](https://www.npmjs.com/package/@langchain/react) `useStream` [hook](https://www.npmjs.com/package/@langchain/react) — Stream agent responses in React/Next.js
+- `[langgraph-nextjs-api-passthrough](https://www.npmjs.com/package/langgraph-nextjs-api-passthrough)` — Secure Next.js API routes that proxy to your deployed agent without exposing keys in the browser
 - [Next.js on Vercel](https://vercel.com/docs/frameworks/nextjs) — Deploy the frontend
+
+
 
 ## What You Are Building
 
@@ -40,7 +43,11 @@ flowchart LR
   LangSmith --> Traces[LangSmith tracing & evals]
 ```
 
+
+
 > **Important:** LangSmith deploys your agent as an **API backend only**. It does not serve a frontend. Vercel hosts the UI; LangSmith hosts the agent.
+
+
 
 ## Main Assignment
 
@@ -66,6 +73,8 @@ Expected agent project layout:
         └── api/[...path]/route.ts
 ```
 
+
+
 ## Prerequisites
 
 In addition to tools from earlier sessions, you will need:
@@ -75,6 +84,8 @@ In addition to tools from earlier sessions, you will need:
 3. Your agent code pushed to a **GitHub** repository (needed for LangSmith cloud deploys)
 4. A [Vercel](https://vercel.com/) account
 5. *(Optional)* **LangSmith Plus** (~$40/month) for one-click cloud deploys via `langgraph deploy`
+
+
 
 ## Quick Command Reference
 
@@ -126,9 +137,11 @@ Set these in the Vercel project (Settings → Environment Variables, or `vercel 
 
 ```text
 LANGGRAPH_API_URL=https://your-deployment.us.langgraph.app
-LANGSMITH_API_KEY=lsv2_pt_...
+vercel --prod=lsv2_pt_...
 NEXT_PUBLIC_API_URL=https://your-app.vercel.app/api
 ```
+
+
 
 ## Setup
 
@@ -152,6 +165,8 @@ TAVILY_API_KEY=
 LANGSMITH_API_KEY=
 LANGSMITH_TRACING=true
 ```
+
+
 
 ## Part 1: Run Locally and Use LangGraph Studio
 
@@ -256,6 +271,8 @@ Browser  →  /api/* on Vercel  →  LangSmith Deployment URL
               (injects API key server-side)
 ```
 
+
+
 ### 1. Scaffold the frontend
 
 From this folder:
@@ -265,6 +282,8 @@ npx create-next-app@latest frontend
 cd frontend
 npm install @langchain/react langgraph-nextjs-api-passthrough
 ```
+
+
 
 ### 2. Add the API passthrough route
 
@@ -280,6 +299,8 @@ export const { GET, POST, PUT, PATCH, DELETE, OPTIONS, runtime } =
     runtime: "edge",
   });
 ```
+
+
 
 ### 3. Build the chat UI with `useStream`
 
@@ -330,6 +351,8 @@ Open `http://localhost:3000`, send a message, and confirm you see streamed respo
 
 ## Part 4: Deploy the Frontend on Vercel
 
+
+
 ### 1. Push the frontend to GitHub
 
 Commit the `frontend/` directory (either in the same repo as your agent or a separate repo).
@@ -346,7 +369,9 @@ LANGSMITH_API_KEY=lsv2_pt_...
 NEXT_PUBLIC_API_URL=https://your-app.vercel.app/api
 ```
 
-4. Deploy
+1. Deploy
+
+
 
 ### 3. Verify end-to-end
 
@@ -356,7 +381,11 @@ Visit your Vercel URL, send a chat message, and confirm:
 - Tool calls work against your deployed agent
 - Traces appear in LangSmith for each run
 
+
+
 ## Outline
+
+
 
 ### Breakout Room #1: Agent Packaging & LangGraph Studio
 
@@ -364,12 +393,16 @@ Visit your Vercel URL, send a chat message, and confirm:
 - Run `langgraph dev` and explore the agent in LangGraph Studio
 - Test with the LangGraph SDK locally
 
+
+
 ### Breakout Room #2: Deploy Agent + Build & Ship Frontend
 
 - Deploy the agent to LangSmith with `langgraph deploy`
 - Scaffold a Next.js chat UI with `useStream`
 - Add a secure API passthrough route
 - Deploy the frontend to Vercel and connect it to your LangSmith deployment
+
+
 
 ## Ship
 
@@ -380,6 +413,8 @@ A deployed agent on LangSmith **and** a live website on Vercel that uses it.
 - A short Loom of either:
   - LangGraph Studio debugging your agent, then your Vercel site chatting with the deployed agent; or
   - your Advanced Activity below
+
+
 
 ## Share
 
@@ -409,6 +444,8 @@ Shout out to @AIMakerspace !
 Feel free to reach out if you're curious or would like to collaborate on similar projects! 🤝🔥
 ```
 
+
+
 ## Submitting Your Homework
 
 Follow these steps to prepare and submit your homework assignment:
@@ -420,7 +457,11 @@ Follow these steps to prepare and submit your homework assignment:
 5. Deploy the frontend to Vercel
 6. Record a Loom video reviewing what you learned from this session
 
+
+
 ## Questions
+
+
 
 ### Question #1
 
@@ -428,7 +469,7 @@ Why does LangSmith deploy your agent as an API backend only, and why do you stil
 
 #### Answer
 
-_(insert your answer here)_
+*(insert your answer here)*
 
 ### Question #2
 
@@ -436,7 +477,7 @@ Why should the LangSmith API key live in a Next.js API route (server-side) inste
 
 #### Answer
 
-_(insert your answer here)_
+*(insert your answer here)*
 
 ## Activity 1: Build a Helpfulness Loop in Production
 
