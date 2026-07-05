@@ -53,7 +53,13 @@ export function Chat({ assistantId }: { assistantId: string }) {
   const send = (text: string) => {
     const content = text.trim();
     if (!content || isLoading) return;
-    stream.submit({ messages: [{ type: "human", content }] });
+    // streamResumable:false disables the SDK's idle-reconnect guard, which
+    // otherwise mistakes the tool-execution pause for a dead socket, aborts the
+    // POST stream, and reconnects to an empty GET (breaks only through Vercel→ngrok).
+    stream.submit(
+      { messages: [{ type: "human", content }] },
+      { streamResumable: false }
+    );
     setInput("");
   };
 
