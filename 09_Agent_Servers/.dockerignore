@@ -1,0 +1,18 @@
+# Frontend is a separate Vercel deploy — the agent image never needs it
+frontend
+
+# Local virtualenv and caches — rebuilt inside the container
+.venv
+__pycache__
+**/__pycache__
+*.pyc
+
+# Local env/secrets — provided to the container at runtime, not baked in
+.env
+.env.*
+
+# Editor/OS cruft
+.DS_Store
+.git
+
+# NOTE: do NOT ignore data/ — rag.py loads data/*.pdf at runtime inside the container

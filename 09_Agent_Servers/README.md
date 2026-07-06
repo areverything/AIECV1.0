@@ -469,7 +469,13 @@ Why does LangSmith deploy your agent as an API backend only, and why do you stil
 
 #### Answer
 
-*(insert your answer here)*
+Q: Why does LangSmith deploy your agent as an API backend only?
+
+By stopping at the API, LangSmith keeps the agent as a standalone building block. Any client can consume it whether it's a web app, a mobile app, a CLI, a job, or any other backend service. Because the agent isn't tied to one particular interface, we can easily change frontends, add new ones, or call it programmatically without ever touching the agent.  LangSmith can also scale, version, trace, and monitor the backend independently of whatever is using it / calling it.
+
+Q: Why do you still need a separate frontend deployment like Vercel?
+
+User needs something to click, which the API alone does not offer... It makes sense to deploy it separately instead of having everything in a monolith that makes scaling more challenging. Separating the frontend and backend helps ensure that there is a clear separation of concerns and a clean interface between the different parts of the system. If we need to create a new client later on that might need different scaling considetaions, we can do so without impacting the frontend built on Vercel.
 
 ### Question #2
 
@@ -477,11 +483,17 @@ Why should the LangSmith API key live in a Next.js API route (server-side) inste
 
 #### Answer
 
-*(insert your answer here)*
+Anything in the browser is public. If we put the LANGSMITH_API_KEY (or any other secrets, really) in client-side code, it ships to every visitor and anyone can read it in dev tools, then use it and likely abuse it, while we are responsible for the bill.
+
+A Next.js API route runs on the server, not in the browser. So the key stays as a server-only env variable, the browser just calls our own /api route with no secret, and that route adds the key before forwarding to LangSmith. The browser gets the answers without ever seeing the key.
 
 ## Activity 1: Build a Helpfulness Loop in Production
 
-Build an `agent_with_helpfulness` graph that adds a post-response helpfulness check: after the agent answers, a judge model decides whether the response is helpful, and if not, the graph loops back for another attempt (with a safe loop limit). Register it in `langgraph.json`, deploy it, then compare LangSmith traces for queries that pass vs. fail the helpfulness check. Does the retry loop behave differently in Studio vs. production?
+Build an `agent_with_helpfulness` graph that adds a post-response helpfulness check: after the agent answers, a judge model decides whether the response is helpful, and if not, the graph loops back for another attempt (with a safe loop limit). Register it in `langgraph.json`, deploy it, then compare LangSmith traces for queries that pass vs. fail the helpfulness check. 
+
+Does the retry loop behave differently in Studio vs. production?
+
+A: No, the retry loop behaves the same in both Studio and Production because it's the same graph, same code and same judge. In studio, the loop happen live and we can watch it while in prod, we'd see it after the fact as a Langsmith trace.
 
 ## Advanced Activity: Auth and Custom Routes
 
