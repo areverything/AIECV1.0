@@ -1,0 +1,80 @@
+=== fireworks_oss ===
+Averages: {'context_precision': 0.7907, 'context_recall': 1.0000, 'faithfulness': 0.8593, 'answer_correctness': 0.7087}
+Per-question:
+  Q1. Into how many life stages does the 2021 AAHA/AAFP framework divide a cat's 
+      {'context_precision': 0.806, 'context_recall': 1.0, 'faithfulness': 1.0, 'answer_correctness': 0.955}
+  Q2. How often does the Task Force recommend examinations for all cats?
+      {'context_precision': 0.917, 'context_recall': 1.0, 'faithfulness': 1.0, 'answer_correctness': 0.582}
+  Q3. How frequently should senior cats be examined?
+      {'context_precision': 0.75, 'context_recall': 1.0, 'faithfulness': 1.0, 'answer_correctness': 0.976}
+  Q4. Why should each examination visit include a life stage assessment?
+      {'context_precision': 0.806, 'context_recall': 1.0, 'faithfulness': 1.0, 'answer_correctness': 0.5}
+  Q5. What is the most fundamental presentation factor the practitioner encounter
+      {'context_precision': 0.917, 'context_recall': 1.0, 'faithfulness': 1.0, 'answer_correctness': 0.936}
+  Q6. Does the Task Force consider end of life to be a separate feline life stage
+      {'context_precision': 1.0, 'context_recall': 1.0, 'faithfulness': 1.0, 'answer_correctness': 0.682}
+  Q7. Which discussion topics may only need to be covered once, during an initial
+      {'context_precision': 0.5, 'context_recall': 1.0, 'faithfulness': 1.0, 'answer_correctness': 0.884}
+  Q8. What kind of photographs does the guideline recommend to help monitor a cat
+      {'context_precision': 0.5, 'context_recall': 1.0, 'faithfulness': 0.0, 'answer_correctness': 0.026}
+  Q9. According to the guidelines, what is one of the most significant and underd
+      {'context_precision': 0.333, 'context_recall': 1.0, 'faithfulness': 0.0, 'answer_correctness': 0.008}
+  Q10. What proportion of cats may present with clinical signs associated with deg
+      {'context_precision': 1.0, 'context_recall': 1.0, 'faithfulness': 1.0, 'answer_correctness': 0.729}
+  Q11. When does a kitten's sensitive socialization period begin and end?
+      {'context_precision': 1.0, 'context_recall': 1.0, 'faithfulness': 1.0, 'answer_correctness': 0.91}
+  Q12. How much pleasant interaction with people should kittens ideally have each 
+      {'context_precision': 1.0, 'context_recall': 1.0, 'faithfulness': 1.0, 'answer_correctness': 0.994}
+  Q13. What important behaviors does a kitten learn from the queen (mother cat)?
+      {'context_precision': 1.0, 'context_recall': 1.0, 'faithfulness': 1.0, 'answer_correctness': 0.828}
+  Q14. Which scratching substrate did cats use most often when offered, and which 
+      {'context_precision': 1.0, 'context_recall': 1.0, 'faithfulness': 1.0, 'answer_correctness': 0.963}
+  Q15. During the physical examination of a mature adult or senior cat, what areas
+      {'context_precision': 0.333, 'context_recall': 1.0, 'faithfulness': 0.889, 'answer_correctness': 0.656}
+Evaluating: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 60/60 [00:48<00:00,  1.24it/s]
+
+=== openai ===
+Averages: {'context_precision': 0.8593, 'context_recall': 1.0000, 'faithfulness': 1.0000, 'answer_correctness': 0.8014}
+Per-question:
+  Q1. Into how many life stages does the 2021 AAHA/AAFP framework divide a cat's 
+      {'context_precision': 0.583, 'context_recall': 1.0, 'faithfulness': 1.0, 'answer_correctness': 0.942}
+  Q2. How often does the Task Force recommend examinations for all cats?
+      {'context_precision': 1.0, 'context_recall': 1.0, 'faithfulness': 1.0, 'answer_correctness': 0.712}
+  Q3. How frequently should senior cats be examined?
+      {'context_precision': 1.0, 'context_recall': 1.0, 'faithfulness': 1.0, 'answer_correctness': 0.981}
+  Q4. Why should each examination visit include a life stage assessment?
+      {'context_precision': 0.806, 'context_recall': 1.0, 'faithfulness': 1.0, 'answer_correctness': 0.659}
+  Q5. What is the most fundamental presentation factor the practitioner encounter
+      {'context_precision': 0.917, 'context_recall': 1.0, 'faithfulness': 1.0, 'answer_correctness': 0.134}
+  Q6. Does the Task Force consider end of life to be a separate feline life stage
+      {'context_precision': 1.0, 'context_recall': 1.0, 'faithfulness': 1.0, 'answer_correctness': 1.0}
+  Q7. Which discussion topics may only need to be covered once, during an initial
+      {'context_precision': 1.0, 'context_recall': 1.0, 'faithfulness': 1.0, 'answer_correctness': 0.976}
+  Q8. What kind of photographs does the guideline recommend to help monitor a cat
+      {'context_precision': 0.833, 'context_recall': 1.0, 'faithfulness': 1.0, 'answer_correctness': 0.941}
+  Q9. According to the guidelines, what is one of the most significant and underd
+      {'context_precision': 0.333, 'context_recall': 1.0, 'faithfulness': 1.0, 'answer_correctness': 0.701}
+  Q10. What proportion of cats may present with clinical signs associated with deg
+      {'context_precision': 1.0, 'context_recall': 1.0, 'faithfulness': 1.0, 'answer_correctness': 0.61}
+  Q11. When does a kitten's sensitive socialization period begin and end?
+      {'context_precision': 1.0, 'context_recall': 1.0, 'faithfulness': 1.0, 'answer_correctness': 0.916}
+  Q12. How much pleasant interaction with people should kittens ideally have each 
+      {'context_precision': 1.0, 'context_recall': 1.0, 'faithfulness': 1.0, 'answer_correctness': 0.992}
+  Q13. What important behaviors does a kitten learn from the queen (mother cat)?
+      {'context_precision': 1.0, 'context_recall': 1.0, 'faithfulness': 1.0, 'answer_correctness': 0.824}
+  Q14. Which scratching substrate did cats use most often when offered, and which 
+      {'context_precision': 1.0, 'context_recall': 1.0, 'faithfulness': 1.0, 'answer_correctness': 0.962}
+  Q15. During the physical examination of a mature adult or senior cat, what areas
+      {'context_precision': 0.417, 'context_recall': 1.0, 'faithfulness': 1.0, 'answer_correctness': 0.67}
+
+=== Comparison (averages) ===
+metric                 fireworks_oss      openai        winner
+context_precision             0.7907      0.8593        openai
+context_recall                1.0000      1.0000           tie
+faithfulness                  0.8593      1.0000        openai
+answer_correctness            0.7087      0.8014        openai
+
+Cost: open the LangSmith project and read tokens/cost per run:
+  https://smith.langchain.com/o/fd95f8ad-eedc-5b33-8701-6e31855a5655/projects/p/fef2bab7-736b-4d41-bbbf-5f633b65fe32
+Fireworks pricing isn't known to LangSmith, so multiply its traced
+token counts by the Fireworks per-token rate to fill the cost column.

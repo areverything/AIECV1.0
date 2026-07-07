@@ -1,13 +1,10 @@
-<p align = "center" draggable="false" ><img src="https://github.com/AI-Maker-Space/LLM-Dev-101/assets/37101144/d1343317-fa2f-41e1-8af1-1dbb18399719"
-     width="200px"
-     height="auto"/>
-</p>
+## Session 10: LLM Servers
 
-## <h1 align="center" id="heading">Session 10: LLM Servers</h1>
 
-| 📰 Session Sheet                                  | ⏺️ Recording                           | 🖼️ Slides                                   | 👨‍💻 Repo       | 📝 Homework                                              | 📁 Feedback                        |
-| ------------------------------------------------- | -------------------------------------- | ------------------------------------------- | ------------- | -------------------------------------------------------- | ---------------------------------- |
-| [Session 10: LLM Servers](https://github.com/AI-Maker-Space/The-AI-Engineering-Certification-v1.0/tree/main/00_Docs/Modules/10_LLM_Servers) |[Recording!](https://us02web.zoom.us/rec/share/zXd6__uO2RwCmJUmNyGKY01sbwYjjrkpDDNPbfK_Es0MANaqRpFOqqYX4sEVYY1d.gJwTZk1729siXnjj) <br> passcode: `^1$@$R@.`| [Session 10 Slides](https://canva.link/953giejzt5igxvw) |You are here! | [Session 10 Assignment](https://forms.gle/hc1B1bkTuXzNVrZU) | [Feedback 7/2](https://forms.gle/uj2QvYjHfHKFFQ8a6) |
+| 📰 Session Sheet                                                                                                                            | ⏺️ Recording                                                                                                                                           | 🖼️ Slides                                              | 👨‍💻 Repo    | 📝 Homework                                                 | 📁 Feedback                                         |
+| ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------- | ------------- | ----------------------------------------------------------- | --------------------------------------------------- |
+| [Session 10: LLM Servers](https://github.com/AI-Maker-Space/The-AI-Engineering-Certification-v1.0/tree/main/00_Docs/Modules/10_LLM_Servers) | [Recording!](https://us02web.zoom.us/rec/share/zXd6__uO2RwCmJUmNyGKY01sbwYjjrkpDDNPbfK_Es0MANaqRpFOqqYX4sEVYY1d.gJwTZk1729siXnjj) passcode: `^1$@$R@.` | [Session 10 Slides](https://canva.link/953giejzt5igxvw) | You are here! | [Session 10 Assignment](https://forms.gle/hc1B1bkTuXzNVrZU) | [Feedback 7/2](https://forms.gle/uj2QvYjHfHKFFQ8a6) |
+
 
 **⚠️!!! PLEASE BE SURE TO SHUTDOWN YOUR DEDICATED ENDPOINT ON FIREWORKS AI WHEN YOU'RE FINISHED YOUR ASSIGNMENT !!!⚠️**
 
@@ -18,9 +15,10 @@ In today's assignment, we'll be creating Fireworks AI endpoints, and then buildi
 - 🤝 Breakout Room #1
   - Set-up Open Source Endpoint (Instructions [here](./ENDPOINT_SETUP.md)) ((This process may take 15-20min.))
   - Test Endpoint and Embeddings with the `endpoint_slammer.ipynb` notebook.
-
 - 🤝 Breakout Room #2
   - Use the Open Source Endpoints to build a RAG LangGraph application
+
+
 
 # Ship 🚢
 
@@ -31,6 +29,8 @@ The completed notebook and your RAG app/notebook!
 - A short Loom of either:
   - the notebook and the RAG application you built for the Main Homework Assignment; or
   - the notebook you created for the Advanced Build
+
+
 
 # Share 🚀
 
@@ -60,7 +60,11 @@ Shout out to @AIMakerspace !
 Feel free to reach out if you're curious or would like to collaborate on similar projects! 🤝🔥
 ```
 
+
+
 # Submitting You Homework
+
+
 
 ## Main Homework Assignment
 
@@ -77,13 +81,19 @@ Follow these steps to prepare and submit your homework assignment:
 
 ## Questions
 
+
+
 ### ❓ Question #1:
 
 What is the difference between serverless and dedicated endpoints?
 
 #### ✅ Answer:
 
-_(insert your answer here)_
+The difference is whether the GPU is shared or reserved for us, and how we get charged.
+
+In Serverless, Fireworks runs the model on shared, multi-tenant hardware. We do not have to provision anything: we just call the model ID (`accounts/fireworks/models/gpt-oss-20b`) and it works! We pay per token, the api scales with demand, and we only pay for what we use, when we use it (in other words, idle does not cost anything). On the cons side, we share capacity, so our throughput and latency are not guaranteed and can slow under platform load from other tenants. This is something to avoid if we need guarantted in terms of capacity and latency.
+
+For Dedicated endpoints, on the other end, Fiireworks provisions GPUs that run only our model. We get charged per hour for as long as the deployment exists, whether we use it of not. In return the capacity of the GPU(s) is guaranteed, and we can expect predictable performance. 
 
 ### ❓ Question #2:
 
@@ -91,7 +101,11 @@ Why is it important to consider token throughput and latency when choosing an LL
 
 #### ✅ Answer:
 
-_(insert your answer here)_
+For a user-facing app, how fast and how reliably the model responds is part of the product, at the same level of the quality of its responses. A smart model that responds slowly, or falls over when too many people use it at once, should be seen as a bad user-facing model.
+
+Latency is how long one request takes. In a chat UI what users feel most is how long it takes for the first token from the answer to appear. If it takes too long, the user might wonder whether the experience is broken. Streaming helps here, but showing tokens as they get generated.
+
+Throughput is how much data the endpoint produces and how many requests it can srve at once. It can help us predict how many users our  service can support. 
 
 ## Activity 1: RAGAS Evaluation with Cost Analysis
 
