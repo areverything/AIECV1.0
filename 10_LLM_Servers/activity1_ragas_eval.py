@@ -53,6 +53,24 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 FIREWORKS_BASE = "https://api.fireworks.ai/inference/v1"
 DATA_DIR = os.environ.get("RAG_DATA_DIR", "data")
 
+# USD per 1M tokens, as (input, output). Chat-generation rates only; embeddings are
+# a negligible fraction of per-query cost. Verify against the current pricing pages:
+# Fireworks https://fireworks.ai/pricing , OpenAI https://openai.com/api/pricing
+RATES = {
+    "accounts/fireworks/models/gpt-oss-20b": (0.07, 0.30),
+    "gpt-4.1-mini": (0.40, 1.60),
+}
+
+
+def _rate_for(model_name: str):
+    """Resolve (input, output) $/1M for a model name, tolerating provider prefixes."""
+    if model_name in RATES:
+        return RATES[model_name]
+    for key, rate in RATES.items():
+        if key in model_name or key.split("/")[-1] in model_name:
+            return rate
+    return None
+
 
 def _tiktoken_len(text: str) -> int:
     return len(tiktoken.encoding_for_model("gpt-4o").encode(text))
@@ -211,20 +229,25 @@ TESTSET = [
 
 # ---- run each pipeline over the test set and score with RAGAS ----
 def score_pipeline(name, answer_fn, qa_pairs, judge_llm, judge_emb):
+    from langchain_core.callbacks import get_usage_metadata_callback
     from ragas import EvaluationDataset, evaluate
     from ragas.metrics import (
         answer_correctness, context_precision, context_recall, faithfulness,
     )
 
+    # Capture generation tokens for THIS pipeline's answers only. The callback scope
+    # ends before evaluate() runs, so the judge's tokens are excluded from the cost.
     samples = []
-    for question, reference in qa_pairs:
-        response, contexts = answer_fn(question)
-        samples.append({
-            "user_input": question,
-            "retrieved_contexts": contexts,
-            "response": response,
-            "reference": reference,
-        })
+    with get_usage_metadata_callback() as usage_cb:
+        for question, reference in qa_pairs:
+            response, contexts = answer_fn(question)
+            samples.append({
+                "user_input": question,
+                "retrieved_contexts": contexts,
+                "response": response,
+                "reference": reference,
+            })
+    usage = {model: dict(u) for model, u in usage_cb.usage_metadata.items()}
 
     dataset = EvaluationDataset.from_list(samples)
     result = evaluate(
@@ -249,10 +272,14 @@ def score_pipeline(name, answer_fn, qa_pairs, judge_llm, judge_emb):
         print(f"  Q{i + 1}. {str(row.get('user_input', ''))[:75]}")
         print(f"      {scores}")
 
-    return {c: float(df[c].mean()) for c in metric_cols}
+    return {
+        "quality": {c: float(df[c].mean()) for c in metric_cols},
+        "usage": usage,
+        "n_queries": len(qa_pairs),
+    }
 
 
-def print_comparison(results: dict[str, dict[str, float]]) -> None:
+def print_comparison(results: dict[str, dict]) -> None:
     """Side-by-side average scores for both providers, with a per-metric winner."""
     names = list(results)  # ["fireworks_oss", "openai"]
     metrics = ["context_precision", "context_recall", "faithfulness", "answer_correctness"]
@@ -260,11 +287,30 @@ def print_comparison(results: dict[str, dict[str, float]]) -> None:
     print("\n=== Comparison (averages) ===")
     print(f"{'metric':<20}{names[0]:>16}{names[1]:>12}{'winner':>14}")
     for m in metrics:
-        a, b = results[names[0]].get(m), results[names[1]].get(m)
+        a, b = results[names[0]]["quality"].get(m), results[names[1]]["quality"].get(m)
         if a is None or b is None:
             continue
         winner = names[0] if a > b else names[1] if b > a else "tie"
         print(f"{m:<20}{a:>16.4f}{b:>12.4f}{winner:>14}")
+
+
+def print_cost_breakdown(results: dict[str, dict]) -> None:
+    """Generation cost per provider, from measured tokens x published rates."""
+    print("\n=== Cost breakdown (answer generation; embeddings excluded, negligible) ===")
+    print(f"{'provider':<16}{'in tok':>10}{'out tok':>10}{'$/query':>12}{'$/100k q':>12}")
+    for name, r in results.items():
+        in_tok = out_tok = 0
+        cost = 0.0
+        for model, u in r["usage"].items():
+            it, ot = u.get("input_tokens", 0), u.get("output_tokens", 0)
+            in_tok += it
+            out_tok += ot
+            rate = _rate_for(model)
+            if rate:
+                cost += it / 1e6 * rate[0] + ot / 1e6 * rate[1]
+        per_q = cost / r["n_queries"] if r["n_queries"] else 0.0
+        print(f"{name:<16}{in_tok:>10}{out_tok:>10}{per_q:>12.5f}{per_q * 100_000:>12.2f}")
+    print("Rates ($/1M in, out):", {k: v for k, v in RATES.items()})
 
 
 def langsmith_project_url(project_name: str) -> str:
@@ -315,6 +361,7 @@ def main():
     )
 
     print_comparison(results)
+    print_cost_breakdown(results)
 
     project = os.environ.get("LANGSMITH_PROJECT", "default")
     print("\nCost: open the LangSmith project and read tokens/cost per run:")
